@@ -1,27 +1,7 @@
 const { Schema, model, Types } = require('mongoose');
 
-const reactionSchema = new Schema(
-  {
-    reactionId: {
-      type: Schema.Types.ObjectId,
-      default: () => new Types.ObjectId()
-    },
-    reactionBody: {
-      type: String,
-      required: true,
-      maxlength: 280
-    },
-    username: {
-      type: String,
-      required: true
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now
-      //TODO: set a getter here
-    }
-  }
-);
+const format = require('date-format');
+const reactionSchema = require('./Reaction');
 
 const thoughtSchema = new Schema(
   {
@@ -34,7 +14,7 @@ const thoughtSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      //TODO: set a getter here
+      get: timeStamp => format(format.ISO8601_WITH_TZ_OFFSET_FORMAT, timeStamp)
     },
     username: {
       type: String,
