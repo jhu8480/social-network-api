@@ -4,6 +4,7 @@ const getAllUsers = async (req, res) => {
   try {
     const users = await User.find()
     .populate('thoughts')
+    .populate('friends')
     .select('-__v');
     res.status(200).json(users);
   } catch(e) {
