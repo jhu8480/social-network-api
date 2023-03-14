@@ -51,4 +51,19 @@ const updateThought = async (req, res) => {
   }
 };
 
-module.exports = { getAllThoughts, createThought, getOneThought, updateThought };
+const deleteThought = async (req, res) => {
+  try {
+    const deleted = await Thought.findOneAndRemove({_id: req.params.thoughtId});
+    if (!deleted) {
+      res.status(404).json('No thought found with that id');
+      return;
+    }
+    res.status(200).json({
+      message: 'successfully deleted'
+    })
+  } catch(e) {
+    res.status(500).json(e);
+  }
+};
+
+module.exports = { getAllThoughts, createThought, getOneThought, updateThought, deleteThought };

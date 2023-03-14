@@ -43,5 +43,19 @@ const updateUser = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  try {
+    const deletedUser = await User.findByIdAndRemove({_id: req.params.userId});
+    if (!deleteUser) {
+      res.status(404).json({ message: 'No user with that ID' });
+      return;
+    }
+    await Thought.deleteMany({username: deletedUser.username});
+    res.status(200).json({ message: 'User and associated thoughts deleted!' });
+  } catch(e) {
+    res.status(500).json(e);
+  }
+};
 
-module.exports = { getAllUsers, createUser, getOneUser, updateUser };
+
+module.exports = { getAllUsers, createUser, getOneUser, updateUser, deleteUser };
