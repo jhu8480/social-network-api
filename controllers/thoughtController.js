@@ -58,6 +58,7 @@ const deleteThought = async (req, res) => {
       res.status(404).json('No thought found with that id');
       return;
     }
+    await User.findOneAndUpdate({username: deleted.username}, {$pull: {thoughts: deleted._id}}, {new: true});
     res.status(200).json({
       message: 'successfully deleted'
     })

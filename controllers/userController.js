@@ -33,7 +33,7 @@ const updateUser = async (req, res) => {
     const updatedUser = await User.findOneAndUpdate({_id: req.params.userId}, {$set: req.body}, { runValidators: true, new: true });
 
     if (!updatedUser) {
-      res.status(404).json({ message: 'No application with this id!' });
+      res.status(404).json({ message: 'No user with this id!' });
       return;
     }
 
@@ -45,7 +45,7 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const deletedUser = await User.findByIdAndRemove({_id: req.params.userId});
+    const deletedUser = await User.findOneAndRemove({_id: req.params.userId});
     if (!deleteUser) {
       res.status(404).json({ message: 'No user with that ID' });
       return;
@@ -57,5 +57,61 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const addFriend = async (req, res) => {
+  try {
+    const {userId, friendId} = req.params;
+    const user = await User.findOneAndUpdate({_id: userId}, {$addToSet: {friends: friendId}});
+    if (!user) {
+      res.status(404).json({ message: 'No user with this id!' });
+      return;
+    }
+    const friend = await User.findOneAndUpdate({_id: friendId}, {$addToSet: {friends: userId}});
+    if (!friend) {
+      res.status(404).json({ message: 'No user with this friend id!' });
+      return;
+    }
+    
+    const updatedUser = await User.findOne({_id: userId});
+    const updatedFriend = await User.findOne({
+      _id: friendId
+    })
 
-module.exports = { getAllUsers, createUser, getOneUser, updateUser, deleteUser };
+    res.status(200).json({
+      updatedUser,
+      updatedFriend
+    });
+  } catch (e) {
+    res.status(500).json(e);
+  }
+};
+
+const removeFriend = async (req, res) => {
+  try {
+    const {userId, friendId} = req.params;
+    const user = await User.findOneAndUpdate({_id: userId}, {$pull: {friends: friendId}});
+    if (!user) {
+      res.status(404).json({ message: 'No user with this id!' });
+      return;
+    }
+    const friend = await User.findOneAndUpdate({_id: friendId}, {$pull: {friends: userId}});
+    if (!friend) {
+      res.status(404).json({ message: 'No user with this friend id!' });
+      return;
+    }
+    
+    const updatedUser = await User.findOne({_id: userId});
+    const updatedFriend = await User.findOne({
+      _id: friendId
+    })
+
+    res.status(200).json({
+      updatedUser,
+      updatedFriend
+    });
+  } catch (e) {
+    res.status(500).json(e);
+  }
+};
+
+
+module.exports = { getAllUsers, createUser, getOneUser, updateUser, deleteUser, addFriend, removeFriend };
